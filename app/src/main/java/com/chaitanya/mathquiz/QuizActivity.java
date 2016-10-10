@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.ShapeDrawable;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,7 +31,6 @@ public class QuizActivity extends AppCompatActivity {
     TextView answer,operation,firstNumber,secondNumber,questionTitle,checkAnswer,quizTitle;
 
     int correctAnswer = 0;
-    int questionNumber = 0;
     int correctAnswers = 0;
     int wrongAnswers = 0;
 
@@ -38,11 +38,14 @@ public class QuizActivity extends AppCompatActivity {
     Random rnd = new Random();
     private Runnable repeat;
 
+    RetainFragment retainFragment;
+
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
+        retainFragment.setData(quiz);
         timer.cancel();
-        System.out.println("destroyed");
     }
 
     @Override
@@ -50,25 +53,38 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
-        Intent quizIntent = getIntent();
-        //0 - Addition
-        //1 - Subtraction
-        //2 - Multiplication
-        int quizType = quizIntent.getIntExtra("operation",0);
-        operation = (TextView) findViewById(R.id.operation);
-        quizTitle =(TextView) findViewById(R.id.quizType);
+        FragmentManager fm = getSupportFragmentManager();
+        retainFragment = (RetainFragment) fm.findFragmentByTag("data");
 
-        switch (quizType){
-            case 0: quiz = new Quiz('+');
-                quizTitle.setText("Addition");
-                break;
-            case 1: quiz = new Quiz('-');
-                quizTitle.setText("Subtraction");
-                break;
-            case 2: quiz = new Quiz('X');
-                quizTitle.setText("Multiplication");
-                break;
+        if(savedInstanceState != null){
+            quiz = retainFragment.getData();
+            System.out.println("Got quiz data");
+            System.out.println(quiz.getOperation());
+        }else{
+            System.out.println("In else");
+            Intent quizIntent = getIntent();
+            //0 - Addition
+            //1 - Subtraction
+            //2 - Multiplication
+            int quizType = quizIntent.getIntExtra("operation",0);
+            quizTitle =(TextView) findViewById(R.id.quizType);
+
+            switch (quizType){
+                case 0: quiz = new Quiz('+');
+                    quizTitle.setText("Addition");
+                    break;
+                case 1: quiz = new Quiz('-');
+                    quizTitle.setText("Subtraction");
+                    break;
+                case 2: quiz = new Quiz('X');
+                    quizTitle.setText("Multiplication");
+                    break;
+            }
+            retainFragment = new RetainFragment();
+            getSupportFragmentManager().beginTransaction().add(retainFragment,"data").commit();
+            retainFragment.setData(quiz);
         }
+        operation = (TextView) findViewById(R.id.operation);
 
         operation.setText(Character.toString(quiz.getOperation()));
         answer = (TextView) findViewById(R.id.answer);
@@ -154,27 +170,16 @@ public class QuizActivity extends AppCompatActivity {
     };
 
     private void newQuestion() {
-        questionNumber++;
-        if(questionNumber <= 10) {
+        quiz.incQuestionNumber();
+        if(quiz.getQuestionNumber() <= 10) {
             //h.removeCallbacks(repeat);
             timer.start();
-            questionTitle.setText("Question No. " + questionNumber);
+            questionTitle.setText("Question No. " + quiz.getQuestionNumber() + " of 10");
             firstNumber.setText(Integer.toString(quiz.generateFirstNumber()));
             secondNumber.setText(Integer.toString(quiz.generateSecondNumber()));
             correctAnswer = quiz.getCorrectAnswer();
             answer.setText("0");
-            //h.postDelayed(repeat,5000);
         }else{
-//            try{
-//                //h.removeCallbacks(repeat);
-//
-//                Intent resultIntent = new Intent(QuizActivity.this,  Class.forName("com.chaitanya.mathquiz.Result"));
-//                resultIntent.putExtra("correctAnswer",quiz.getNumCorrect());
-//                resultIntent.putExtra("wrongAnswer",quiz.getNumWrong());
-//                startActivity(resultIntent);
-//            } catch (ClassNotFoundException e) {
-//                e.printStackTrace();
-//            }
             AlertDialog.Builder builder =  new AlertDialog.Builder(QuizActivity.this);
             builder.setMessage("Correct Answers : " + Integer.toString(quiz.getNumCorrect()))
                     .setCancelable(false)

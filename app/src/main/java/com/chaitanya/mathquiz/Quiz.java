@@ -9,12 +9,25 @@ public class Quiz {
 
     char operation;
     Random rnd = new Random();
-    int firstNumber, secondNumber, numCorrect, numWrong;
+    int firstNumber, secondNumber, numCorrect, numWrong, questionNumber;
 
     public Quiz(char operation){
         this.operation = operation;
         this.numCorrect = 0;
         this.numWrong = 0;
+        this.questionNumber = 0;
+    }
+
+    public int getQuestionNumber() {
+        return questionNumber;
+    }
+
+    public void setQuestionNumber(int questionNumber) {
+        this.questionNumber = questionNumber;
+    }
+
+    public void incQuestionNumber(){
+        this.questionNumber++;
     }
 
     public int generateFirstNumber(){
