@@ -2,11 +2,6 @@ package com.chaitanya.mathquiz;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -16,7 +11,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,7 +26,7 @@ public class QuizActivity extends AppCompatActivity {
     Quiz quiz;
 
     RetainFragment retainFragment;
-    CountDownTimer timer;
+    CountDownTimer timer,tempTimer;
 
 
     @Override
@@ -77,20 +71,6 @@ public class QuizActivity extends AppCompatActivity {
             retainFragment.setData(quiz);
         }
 
-        timer = new CountDownTimer(quiz.getQuestionTimeRemaining(),500){
-
-            @Override
-            public void onTick(long millisUntilFinished) {
-                quiz.setQuestionTimeRemaining(millisUntilFinished);
-                timeLeft.setText("Time left: 0" + Long.toString(millisUntilFinished/1000 + 1));
-            }
-
-            @Override
-            public void onFinish() {
-                newQuestion();
-            }
-        };
-
         quizTitle =(TextView) findViewById(R.id.quizType);
         switch (quiz.getOperation()){
             case '+': quizTitle.setText(R.string.Addition);
@@ -134,7 +114,11 @@ public class QuizActivity extends AppCompatActivity {
         enter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Toast toast = Toast.makeText(QuizActivity.this, quiz.checkForAnswer(Integer.parseInt(answer.getText().toString()))?"Correct":"Wrong", Toast.LENGTH_SHORT);
+                final Toast toast;
+                if(answer.getText().toString().equals(""))
+                    toast = Toast.makeText(QuizActivity.this, "Wrong", Toast.LENGTH_SHORT);
+                else
+                    toast = Toast.makeText(QuizActivity.this, quiz.checkForAnswer(Integer.parseInt(answer.getText().toString()))?"Correct":"Wrong", Toast.LENGTH_SHORT);
                 toast.show();
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
@@ -148,14 +132,44 @@ public class QuizActivity extends AppCompatActivity {
             }
         });
 
+        timer = new CountDownTimer(5000,500){
+
+            @Override
+            public void onTick(long millisUntilFinished) {
+                quiz.setQuestionTimeRemaining(millisUntilFinished);
+                setTimer(quiz.getQuestionTimeRemaining());
+            }
+
+            @Override
+            public void onFinish() {
+                newQuestion();
+            }
+        };
+
         if(savedInstanceState == null){
             newQuestion();
         }else{
             questionTitle.setText("Question No." + quiz.getQuestionNumber() + " of 10");
             firstNumber.setText(Integer.toString(quiz.getFirstNumber()));
             secondNumber.setText(Integer.toString(quiz.getSecondNumber()));
-            timer.start();
+            tempTimer = new CountDownTimer(quiz.getQuestionTimeRemaining(),500){
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    quiz.setQuestionTimeRemaining(millisUntilFinished);
+                    setTimer(quiz.getQuestionTimeRemaining());
+                }
+
+                @Override
+                public void onFinish() {
+                    newQuestion();
+                }
+            };
+            tempTimer.start();
         }
+    }
+
+    public void setTimer(long timeRemains){
+        timeLeft.setText("Time left: 0" + Long.toString(timeRemains/1000 + 1));
     }
 
     private void newQuestion() {
@@ -241,11 +255,23 @@ public class QuizActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         timer.cancel();
-        timer = new CountDownTimer(quiz.getQuestionTimeRemaining(),500) {
+//        timer = new CountDownTimer(quiz.getQuestionTimeRemaining(),500) {
+//            @Override
+//            public void onTick(long millisUntilFinished) {
+//                quiz.setQuestionTimeRemaining(millisUntilFinished);
+//                timeLeft.setText("Time left: 0" + Long.toString(millisUntilFinished/1000 + 1));
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//                newQuestion();
+//            }
+//        };
+        tempTimer = new CountDownTimer(quiz.getQuestionTimeRemaining(),500) {
             @Override
             public void onTick(long millisUntilFinished) {
                 quiz.setQuestionTimeRemaining(millisUntilFinished);
-                timeLeft.setText("Time left: 0" + Long.toString(millisUntilFinished/1000 + 1));
+                setTimer(quiz.getQuestionTimeRemaining());
             }
 
             @Override
@@ -262,10 +288,10 @@ public class QuizActivity extends AppCompatActivity {
                             startActivity(mainMenu);
                         }
                     })
-                    .setNegativeButton("No",new DialogInterface.OnClickListener() {
+                .setNegativeButton("No",new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.cancel();
-                            timer.start();
+                            tempTimer.start();
                         }
                     });
             AlertDialog alert = builder.create();
