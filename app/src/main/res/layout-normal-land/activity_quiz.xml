@@ -18,7 +18,7 @@
         android:layout_below="@+id/head">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/llLeft"
@@ -76,7 +76,7 @@
                 android:paddingTop="10dp"
                 android:gravity="center_horizontal"
                 android:layout_gravity="center_horizontal"
-                android:layout_width="75dp"
+                android:layout_width="100dp"
                 android:layout_height="1dp"
                 android:background="#000"
                 android:layout_marginTop="10dp" />
@@ -85,7 +85,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="0"
                 android:id="@+id/answer"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="center_horizontal"
@@ -97,7 +96,7 @@
                 android:paddingTop="10dp"
                 android:layout_gravity="center_horizontal"
                 android:gravity="center_horizontal"
-                android:layout_width="75dp"
+                android:layout_width="100dp"
                 android:layout_height="1dp"
                 android:background="#000"
                 android:layout_marginTop="10dp" />
@@ -105,7 +104,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:id="@+id/llRight"
@@ -224,20 +223,22 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:id="@+id/head">
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/homeButton"
-            android:background="@mipmap/ic_launcher"
-            android:layout_alignParentTop="true" />
+        android:id="@+id/head"
+        android:weightSum="2">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:id="@+id/quizType" />
+            android:id="@+id/quizType"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/timeLeft"
+            android:gravity="center_vertical|right"
+            android:layout_weight="1"/>
 
     </LinearLayout>
 

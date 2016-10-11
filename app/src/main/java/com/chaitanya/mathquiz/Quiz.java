@@ -10,12 +10,22 @@ public class Quiz {
     char operation;
     Random rnd = new Random();
     int firstNumber, secondNumber, numCorrect, numWrong, questionNumber;
+    long questionTimeRemaining;
+
+    public long getQuestionTimeRemaining() {
+        return questionTimeRemaining;
+    }
+
+    public void setQuestionTimeRemaining(long questionTimeRemaining) {
+        this.questionTimeRemaining = questionTimeRemaining;
+    }
 
     public Quiz(char operation){
         this.operation = operation;
         this.numCorrect = 0;
         this.numWrong = 0;
         this.questionNumber = 0;
+        this.questionTimeRemaining = 5000;
     }
 
     public int getQuestionNumber() {

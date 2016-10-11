@@ -10,9 +10,21 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.chaitanya.mathquiz.Menu">
 
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/list"
+        android:layout_marginTop="25dp"
+        android:layout_below="@+id/welcomeMessage"></ListView>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Math Quiz"/>
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Welcome to Math Quiz"
+        android:id="@+id/welcomeMessage"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_vertical|center_horizontal" />
 
 </RelativeLayout>
